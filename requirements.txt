@@ -1,0 +1,6 @@
+# Paket Python untuk aplikasi sinkron ARKAS (Windows, Python 3.11).
+# Pasang dengan:  py -3.11 -m pip install -r requirements.txt
+# sqlcipher3 menyediakan roda (wheel) Windows hanya untuk Python 3.10/3.11 —
+# karena itu aplikasi ini dijalankan dengan py -3.11, bukan Python yang lebih baru.
+sqlcipher3
+customtkinter

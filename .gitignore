@@ -1,0 +1,5 @@
+# Pengaturan lokal berisi TOKEN sinkron — jangan dibagikan, jangan di-commit.
+settings.json
+__pycache__/
+*.db
+*.log
