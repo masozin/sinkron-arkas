@@ -15,6 +15,7 @@ Jalankan dengan Python 3.11 di Windows:
 
 import json
 import os
+import re
 import subprocess
 import sys
 import threading
@@ -87,6 +88,17 @@ def simpan_pengaturan(pengaturan):
 
 
 # ── Perintah & proses ─────────────────────────────────────────
+
+def tampak_seperti_hash(token):
+    """Token sinkron asli BUKAN hash SHA-256. Di database myschool
+    yang tersimpan memang hash-nya (kolom token_hash, 64 karakter
+    heksadesimal) — hash itu tidak bisa dipakai sebagai token,
+    karena server akan meng-hash-nya lagi dan hasilnya tidak akan
+    pernah cocok (server menjawab 401 'Token sinkron tidak
+    dikenal'). Fungsi ini mengenali jebakan itu: tepat 64 karakter
+    0-9a-f."""
+    return bool(re.fullmatch(r"[0-9a-fA-F]{64}", (token or "").strip()))
+
 
 def bangun_perintah(cfg):
     """Susun (argv, env) untuk menjalankan sinkron.py.
@@ -282,6 +294,16 @@ class AplikasiSinkron(ctk.CTk):
         if not token:
             self._tulis("!! Token sinkron masih kosong — "
                         "sinkron dibatalkan.")
+            return
+        if tampak_seperti_hash(token):
+            self._tulis("!! Token ini tampak seperti HASH dari "
+                        "database (kolom token_hash) — itu bukan "
+                        "tokennya. Yang harus diisi adalah TOKEN ASLI "
+                        "yang ditampilkan perintah `php artisan "
+                        "bos:token` di myschool tujuan (sekali tampil). "
+                        "Server menyimpan hash-nya saja; mengisi hash "
+                        "di sini pasti ditolak (401). Sinkron "
+                        "dibatalkan.")
             return
         if not url:
             self._tulis("!! URL myschool masih kosong — "
